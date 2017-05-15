@@ -1,0 +1,10 @@
+<configuration>
+      <property>
+          <name>fs.defaultFS</name>
+          <value>hdfs://192.168.1.245:8082</value>
+      </property>
+      <property>
+		<name>dfs.permissions</name>
+		<value>false</value>
+	  </property>	
+</configuration>
