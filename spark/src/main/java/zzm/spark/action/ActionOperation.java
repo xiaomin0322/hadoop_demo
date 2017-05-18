@@ -1,6 +1,8 @@
 package zzm.spark.action;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -8,10 +10,15 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.api.java.function.FlatMapFunction;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.api.java.function.Function2;
+import org.apache.spark.api.java.function.PairFunction;
+import org.apache.spark.api.java.function.VoidFunction;
 
 import scala.Tuple2;
+
+import com.esotericsoftware.kryo.util.Util;
 
 /**
  * action操作实战
@@ -25,7 +32,69 @@ public class ActionOperation {
 		 //collectTest();
 		//countTest();
 		// takeTest();
-		countByKeyTest();
+		//countByKeyTest();
+		wordCount();
+	}
+	
+	
+	/**
+	 * reduce算子 案例：求累加和
+	 */
+	private static void wordCount() {
+		SparkConf conf = new SparkConf().setAppName("wordCount")
+				.setMaster("local");
+		JavaSparkContext sc = new JavaSparkContext(conf);
+
+		List<String> dataList = new ArrayList<String>();
+		dataList.add("1,2,a,v,c,b");
+		dataList.add("1,3,a,v,a,b");
+
+		JavaRDD<String> dataRDD = sc.parallelize(dataList);
+
+		
+		/*
+		 * 对RDD执行flatMap算子将每一行文本拆分为多个单词
+		 * flatMap其实就是接收原始RDD中的每个元素，并进行各种处理返回多个元素，即封装在Iterable中
+		 * 新的RDD中，即封装了所有的新元素，所以新的RDD大小一定大于原始的RDD
+		 */
+		
+		JavaRDD<String> flatMapRDD  = dataRDD.flatMap(new FlatMapFunction<String, String>() {
+			@Override
+			public Iterator<String> call(String t) throws Exception {
+				return Arrays.asList(t.split(",")).iterator();
+			}
+		});
+		
+		JavaPairRDD<String,Integer> pairRDD=   flatMapRDD.mapToPair(new PairFunction<String,String,Integer>() {
+		    	
+			private static final long serialVersionUID = 1L;
+			@Override
+			public Tuple2<String,Integer> call(String t) throws Exception {
+				return new Tuple2<String, Integer>(t, 1);
+			}
+		});
+		
+		JavaPairRDD<String,Integer> reduceByKeyRDD = pairRDD.reduceByKey(new Function2<Integer, Integer, Integer>() {
+			@Override
+			public Integer call(Integer v1, Integer v2) throws Exception {
+				// TODO Auto-generated method stub
+				return v1+v2;
+			}
+		});
+		
+		reduceByKeyRDD.foreach(new VoidFunction<Tuple2<String, Integer>>() {
+
+			@Override
+			public void call(Tuple2<String, Integer> arg0) throws Exception {
+				// TODO Auto-generated method stub
+				System.out.println(arg0._1 + " : " + arg0._2);
+			}
+		});
+		
+		
+		//System.out.println(reduceByKeyRDD.collect());
+
+		sc.close();
 	}
 
 	/**
