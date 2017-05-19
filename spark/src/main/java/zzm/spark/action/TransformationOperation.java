@@ -1,5 +1,6 @@
 package zzm.spark.action;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -25,11 +26,97 @@ public class TransformationOperation {
 	public static void main(String[] args) {
 		// mapTest();
 		// filterTest();
-		 //flatMapTest();
-		  //groupByKeyTest();
-		 //reduceByKeyTest();
-		   //sortByKeyTest();
-		joinTest();
+		// flatMapTest();
+		// groupByKeyTest();
+		// reduceByKeyTest();
+		// sortByKeyTest();
+		// joinTest();
+		//aggregateByKeyTest();
+		unionTest();
+	}
+	
+	
+	/**
+	 * testSparkCoreApiUnion 合并两个RDD
+	 * 
+	 * @param rdd
+	 */
+	private static void unionTest() {
+		
+		SparkConf conf = new SparkConf().setAppName("map").setMaster("local");
+		JavaSparkContext spark = new JavaSparkContext(conf);
+
+		List<Tuple2<String, Integer>> studentsList = Arrays.asList(
+				new Tuple2<String, Integer>("a", 1),
+				new Tuple2<String, Integer>("b", 2),
+				new Tuple2<String, Integer>("c", 8));
+		List<Tuple2<String, Integer>> scoresList = Arrays.asList(
+				new Tuple2<String, Integer>("a", 4),
+				new Tuple2<String, Integer>("b", 3),
+				new Tuple2<String, Integer>("c", 1));
+		
+		// 并行化两个集合
+				JavaPairRDD<String, Integer> studentsRDD = spark
+						.parallelizePairs(studentsList);
+				JavaPairRDD<String, Integer> scoresRDD = spark
+						.parallelizePairs(scoresList);
+		
+		
+		JavaPairRDD<String, Integer> unionRdd = studentsRDD.union(scoresRDD);
+		unionRdd.foreach(new VoidFunction<Tuple2<String, Integer>>() {
+			@Override
+			public void call(Tuple2<String, Integer> t) throws Exception {
+				// TODO Auto-generated method stub
+				System.out.println("key=="+t._1+"   "+t._2);
+			}
+		
+		});
+	}
+
+	/**
+	 * aggregateByKey函数对PairRDD中相同Key的值进行聚合操作，在聚合过程中同样使用了一个中立的初始值。
+	 * 和aggregate函数类似，aggregateByKey返回值的类型不需要和RDD中value的类型一致。
+	 * 因为aggregateByKey是对相同Key中的值进行聚合操作，所以aggregateByKey函数最终返回的类型还是Pair RDD，
+	 * 对应的结果是Key和聚合好的值；而aggregate函数直接是返回非RDD的结果，这点需要注意。
+	 * 在实现过程中，定义了三个aggregateByKey函数原型，但最终调用的aggregateByKey函数都一致。
+	 * 
+	 * 
+	 * aggregateByKey和aggregate结果有点不一样。
+	 * 如果用aggregate函数对含有3、2、4三个元素的RDD进行计算，初始值为1的时候，计算的结果应该是10，而这里是9，
+	 * 这是因为aggregate函数中的初始值需要和reduce函数以及combine函数结合计算
+	 * ，而aggregateByKey中的初始值只需要和reduce函数计算， 不需要和combine函数结合计算，所以导致结果有点不一样。
+	 */
+	public static void aggregateByKeyTest() {
+		SparkConf conf = new SparkConf().setAppName("map").setMaster("local");
+		JavaSparkContext spark = new JavaSparkContext(conf);
+
+		Tuple2<Integer, Integer> t1 = new Tuple2<Integer, Integer>(1, 3);
+		Tuple2<Integer, Integer> t2 = new Tuple2<Integer, Integer>(1, 2);
+		Tuple2<Integer, Integer> t3 = new Tuple2<Integer, Integer>(1, 4);
+		Tuple2<Integer, Integer> t4 = new Tuple2<Integer, Integer>(2, 3);
+		List<Tuple2<Integer, Integer>> list = new ArrayList<Tuple2<Integer, Integer>>();
+		System.out.println("原始数据如下:");
+		list.add(t1);
+		list.add(t2);
+		list.add(t3);
+		list.add(t4);
+
+		list.forEach(t -> {
+			System.out.println(t._1 + "," + t._2());
+		});
+		System.out.println("====================================");
+
+		JavaPairRDD<Integer, Integer> rdd1 = spark.parallelizePairs(list);
+		JavaPairRDD<Integer, Integer> result = rdd1.aggregateByKey(11,
+				(a, b) -> {
+					System.out.println("seqOp:" + a + "," + b);
+					return Math.max(a, b);
+				}, (a, b) -> {
+					System.out.println("combOp:" + a + "," + b);
+					return a + b;
+				});
+		rdd1.foreach(System.out::println);
+		System.out.println("聚合返回结果:" + result.collectAsMap());
 	}
 
 	/**
@@ -133,7 +220,7 @@ public class TransformationOperation {
 					@Override
 					public Iterator<String> call(String arg0) throws Exception {
 						// TODO Auto-generated method stub
-						return  Arrays.asList(arg0.split(" ")).iterator();
+						return Arrays.asList(arg0.split(" ")).iterator();
 					}
 				});
 

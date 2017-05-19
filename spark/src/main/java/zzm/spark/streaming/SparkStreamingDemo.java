@@ -23,12 +23,12 @@ import scala.Tuple2;
  */
 public class SparkStreamingDemo {
 	public static void main(String[] args)throws Exception {
-		SparkConf conf = new SparkConf().setMaster("local").setAppName(
+		SparkConf conf = new SparkConf().setMaster("local[2]").setAppName(
 				"NetworkWordCount");
 		JavaStreamingContext jssc = new JavaStreamingContext(conf,
 				Durations.seconds(5));
 		JavaReceiverInputDStream<String> lines = jssc.socketTextStream(
-				"localhost", 9999);
+				"192.168.1.246", 9999);
 
 		// Split each line into words
 		JavaDStream<String> words = lines
