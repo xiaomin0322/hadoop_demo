@@ -1,8 +1,14 @@
 package zzm.spark.streaming;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
+import org.apache.spark.api.java.function.FlatMapFunction;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.api.java.function.Function2;
 import org.apache.spark.api.java.function.PairFunction;
@@ -34,13 +40,20 @@ public class WindowDemo {
 		/**
 		 * 搜索的日志格式：name words，比如：张三 hello 我们通过map算子将搜索词取出
 		 */
-		JavaDStream<String> mapDStream = socketTextStream
+		/*JavaDStream<String> mapDStream = socketTextStream
 				.map(new Function<String, String>() {
 					private static final long serialVersionUID = 1L;
 
 					public String call(String log) throws Exception {
 						// TODO Auto-generated method stub
 						return log.split(" ")[1];
+					}
+				});*/
+		
+		JavaDStream<String> mapDStream = socketTextStream
+				.flatMap(new FlatMapFunction<String, String>() {
+					public Iterator<String> call(String x) {
+						return Arrays.asList(x.split(" ")).iterator();
 					}
 				});
 
@@ -68,7 +81,7 @@ public class WindowDemo {
 								// TODO Auto-generated method stub
 								return v1 + v2;
 							}
-						}, Durations.seconds(20), Durations.seconds(5));
+						}, Durations.seconds(60 * 60), Durations.seconds(5));
 
 		/**
 		 * 获取前3名的搜索词
@@ -115,16 +128,36 @@ public class WindowDemo {
 												tuple._2, tuple._1);
 									}
 								});
+						
 
 						// 获取降序排列之后的前3名
 						List<Tuple2<String, Integer>> result = wordcountRDD
 								.take(3);
+						Map<String,Tuple2<String, Integer>> map = new HashMap<String, Tuple2<String,Integer>>();
+						
 						// 遍历输出结果
 						for (Tuple2<String, Integer> info : result) {
 							System.out.println(info._1 + "  " + info._2);
+							map.put(info._1, info);
 						}
+						
+						/*JavaPairRDD<String, Integer> filterRDD = wordcountRDD.mapToPair(new PairFunction<Tuple2<String, Integer>, String,Integer>() {
+							private static final long serialVersionUID = 1L;
+							public Tuple2<String,Integer> call(
+									Tuple2<String, Integer> tuple)
+									throws Exception {
+								return map.get(tuple._1);
+							}
+						});*/
+						
+						JavaPairRDD<String, Integer> filterRDD = wordcountRDD.filter(new Function<Tuple2<String,Integer>, Boolean>() {
+							@Override
+							public Boolean call(Tuple2<String, Integer> v1) throws Exception {
+								return map.containsKey(v1._1);
+							}
+						});
 
-						return wordsRDD;
+						return filterRDD;
 					}
 				});
 
