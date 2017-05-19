@@ -39,7 +39,11 @@ public class UpdateStateByKeyDemo {
 		 */
 
 		SparkConf conf = new SparkConf().setMaster("local[2]").setAppName("UpdateStateByKeyDemo");
-
+		
+		conf.set("spark.sql.broadcastTimeout", "50000");
+		conf.set("spark.network.timeout", "50000");
+		
+		
 		/*
 		 * 
 		 * 第二步：创建SparkStreamingContext：
@@ -61,7 +65,7 @@ public class UpdateStateByKeyDemo {
 		 */
 
 		JavaStreamingContext jsc = new JavaStreamingContext(conf,
-				Durations.seconds(5));
+				Durations.seconds(1));
 
 		// 报错解决办法做checkpoint,开启checkpoint机制，把checkpoint中的数据放在这里设置的目录中，
 
