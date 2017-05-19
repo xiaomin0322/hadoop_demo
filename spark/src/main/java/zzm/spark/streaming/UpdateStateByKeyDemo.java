@@ -69,6 +69,8 @@ public class UpdateStateByKeyDemo {
 
 		jsc.checkpoint("/usr/local/tmp/checkpoint");
 
+		//jsc.checkpoint("D:\\usr\\local\\tmp\\checkpoint");
+		
 		/*
 		 * 
 		 * 第三步：创建Spark Streaming输入数据来源input Stream：

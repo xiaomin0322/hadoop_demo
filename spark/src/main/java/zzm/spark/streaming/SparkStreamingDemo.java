@@ -2,8 +2,10 @@ package zzm.spark.streaming;
 
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 
 import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.Optional;
 import org.apache.spark.api.java.function.FlatMapFunction;
 import org.apache.spark.api.java.function.Function2;
 import org.apache.spark.api.java.function.PairFunction;
@@ -27,6 +29,10 @@ public class SparkStreamingDemo {
 				"NetworkWordCount");
 		JavaStreamingContext jssc = new JavaStreamingContext(conf,
 				Durations.seconds(5));
+		
+		
+		//jssc.checkpoint("/usr/local/tmp/checkpoint");
+		
 		JavaReceiverInputDStream<String> lines = jssc.socketTextStream(
 				"192.168.1.246", 9999);
 
@@ -51,6 +57,8 @@ public class SparkStreamingDemo {
 						return i1 + i2;
 					}
 				});
+		
+		
 
 		// Print the first ten elements of each RDD generated in this DStream to
 		// the console
