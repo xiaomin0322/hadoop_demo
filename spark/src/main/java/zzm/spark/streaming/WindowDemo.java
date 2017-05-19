@@ -81,7 +81,7 @@ public class WindowDemo {
 								// TODO Auto-generated method stub
 								return v1 + v2;
 							}
-						}, Durations.seconds(60 * 60), Durations.seconds(5));
+						}, Durations.seconds(20), Durations.seconds(5));
 
 		/**
 		 * 获取前3名的搜索词
