@@ -21,7 +21,7 @@ public class SparkSqlHiveTest {
 	        for(Row row : rows){
 	            System.out.println(row);
 	        }*/
-	        sqlContext.sql("SELECT * FROM aa").show();
+	        sqlContext.sql("SELECT * FROM aa limit 3").show();
 	        //sc.stop();
 	        sc.close();
 	    }
