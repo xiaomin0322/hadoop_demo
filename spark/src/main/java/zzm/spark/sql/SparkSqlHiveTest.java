@@ -9,8 +9,8 @@ public class SparkSqlHiveTest {
 	 public static final String master = "spark://master:7077";
 	   
 		public static void main(String[] args) {
-	        SparkConf conf = new SparkConf().setAppName("demo1").setMaster(master);
-	        conf.set("spark.executor.memory", "256M");
+	        SparkConf conf = new SparkConf().setAppName("sparkHive")/*.setMaster(master)*/;
+	        //conf.set("spark.executor.memory", "2256M");
 	        JavaSparkContext sc = new JavaSparkContext(conf);
 	        HiveContext sqlContext = new org.apache.spark.sql.hive.HiveContext(sc.sc());
 	        //Dataset<Row> df = sqlContext.sql("select * from data_center.shop limit 10");
@@ -20,7 +20,7 @@ public class SparkSqlHiveTest {
 	        for(Row row : rows){
 	            System.out.println(row);
 	        }*/
-	        sqlContext.sql("select * from data_center.shop limit 10").show();
+	        sqlContext.sql("select * from aa limit 3").show();
 	        
 	    }
 }

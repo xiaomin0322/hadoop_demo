@@ -38,7 +38,7 @@ public class SparkSqlTest {
     }
     
     public static void main(String[] args) {
-        SparkConf conf = new SparkConf().setAppName("Test").setMaster("local");
+        SparkConf conf = new SparkConf().setAppName("Test")/*.setMaster("local")*/;
         JavaSparkContext sc = new JavaSparkContext(conf);
         
         SparkSession spark = SparkSession.builder().appName("Test").getOrCreate();
