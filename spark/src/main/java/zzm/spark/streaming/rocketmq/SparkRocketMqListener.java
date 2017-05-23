@@ -11,7 +11,7 @@ import com.cmall.mq.rocket.listener.RocketMqMessageListener;
  * 业务监听实现Demo
  * Created by zzm 
  */
-public class SparkRocketMqListenerReceiver implements RocketMqMessageListener {
+public class SparkRocketMqListener implements RocketMqMessageListener {
 	
 	public boolean onMessage(List<MessageExt> messages, ConsumeConcurrentlyContext Context) {
         for (int i = 0; i < messages.size(); i++) {
