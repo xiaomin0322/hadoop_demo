@@ -48,7 +48,7 @@ public class SparkSqlRocketMqWindowDemo {
 	public static void main(String[] args) throws Exception {
 		
 		
-		SparkConf conf = new SparkConf().setAppName("SparkSqlRocketMqWindowDemo").setMaster("local[2]");
+		SparkConf conf = new SparkConf().setAppName("SparkSqlRocketMqWindowDemo")/*.setMaster("local[2]")*/;
 		JavaStreamingContext jsc = new JavaStreamingContext(conf,
 				Durations.seconds(5));
 

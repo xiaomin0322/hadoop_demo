@@ -35,7 +35,7 @@
      <!-- 生产者 -->
 	<bean id="defaultProducer" class="com.cmall.mq.rocket.producer.DefaultProducer"
 		init-method="init" destroy-method="destroy" scope="singleton">
-		<property name="producerGroup" value="${mq.rocket.producerGroup}"></property>
+		<property name="producerGroup" value="${mq.rocket.consumerGroup1}"></property>
 		<property name="namesrvAddr" value="${mq.rocket.namesrvAddr}"></property>
 	</bean>
 	
