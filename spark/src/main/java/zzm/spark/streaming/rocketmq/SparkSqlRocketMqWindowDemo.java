@@ -1,8 +1,12 @@
 package zzm.spark.streaming.rocketmq;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
@@ -43,7 +47,7 @@ public class SparkSqlRocketMqWindowDemo {
 	public static void main(String[] args) throws Exception {
 		
 		
-		SparkConf conf = new SparkConf().setAppName("SparkSqlRocketMqWindowDemo")/*.setMaster("local[2]")*/;
+		SparkConf conf = new SparkConf().setAppName("SparkSqlRocketMqWindowDemo").setMaster("local[2]");
 		JavaStreamingContext jsc = new JavaStreamingContext(conf,
 				Durations.seconds(5));
 
@@ -125,11 +129,23 @@ public class SparkSqlRocketMqWindowDemo {
                 resultRowRDD.foreachPartition(new JavaForeachPartitionFunc() {
 					@Override
 					public void call(scala.collection.Iterator<Row> it) {
+						 java.util.List<String> list = new ArrayList<String>();
 						 while (it.hasNext()){
 							 Row t =it.next();
 							 System.out.println("item === "+t.getAs("item")+" "+t.getAs("count"));
+							 list.add(t.getAs("item")+" "+t.getAs("count"));
 					         //System.out.println("toString === "+t);
 					        }
+						 
+						 try {
+							 File out = new File("/spark/examples/jars/output");
+							 if(!out.exists()){
+								 out.createNewFile();
+							 }
+							FileUtils.writeLines(out, list);
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
 					}
 				});
 		        
