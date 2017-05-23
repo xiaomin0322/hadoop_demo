@@ -116,7 +116,7 @@ public class SparkSqlRocketMqWindowDemo {
 		        sqlContext.registerDataFrameAsTable(df,"categoryItemTable");
 				
 		        
-		        Dataset<Row>  reseltDataFram = sqlContext.sql("SELECT * from categoryItemTable order by count desc limit 3");
+		        Dataset<Row>  reseltDataFram = sqlContext.sql("SELECT * from categoryItemTable order by count desc limit 10");
 		        
 		        //reseltDataFram.show();
 		        
