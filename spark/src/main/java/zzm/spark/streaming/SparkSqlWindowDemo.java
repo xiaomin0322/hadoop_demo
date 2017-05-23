@@ -25,6 +25,8 @@ import org.apache.spark.streaming.api.java.JavaReceiverInputDStream;
 import org.apache.spark.streaming.api.java.JavaStreamingContext;
 
 import scala.Tuple2;
+import scala.runtime.AbstractFunction1;
+import scala.runtime.BoxedUnit;
 
 /**
  * 基于滑动窗口的热点搜索词实时统计
@@ -109,10 +111,33 @@ public class SparkSqlWindowDemo {
 		        
 		        Dataset<Row>  reseltDataFram = sqlContext.sql("SELECT * from categoryItemTable order by count desc limit 3");
 		        
-		        reseltDataFram.show();
+		        //reseltDataFram.show();
 		        
-		      //把DF变成RDD
-		      //RDD<Row> resultRowRDD = reseltDataFram.rdd();
+		        //把DF变成RDD
+		        RDD<Row> resultRowRDD = reseltDataFram.rdd();
+		        
+                resultRowRDD.foreachPartition(new JavaForeachPartitionFunc() {
+					@Override
+					public void call(scala.collection.Iterator<Row> it) {
+						 while (it.hasNext()){
+							 Row t =it.next();
+							 System.out.println("item === "+t.getAs("item")+" "+t.getAs("count"));
+					         //System.out.println("toString === "+t);
+					        }
+					}
+				});
+		        
+		        
+		       /* resultRowRDD.foreachPartition(new AbstractFunction1<scala.collection.Iterator<Row>,BoxedUnit>() {
+					@Override
+					public BoxedUnit apply(scala.collection.Iterator<Row> it) {
+						 while (it.hasNext()){
+					            System.out.println(it.next().toString());
+					        }
+					        return BoxedUnit.UNIT;
+					}
+				});*/
+		        
 			}
 		});
 
