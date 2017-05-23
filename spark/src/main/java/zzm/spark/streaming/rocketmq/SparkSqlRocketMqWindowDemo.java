@@ -1,12 +1,9 @@
 package zzm.spark.streaming.rocketmq;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
@@ -32,6 +29,10 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import scala.Tuple2;
 import zzm.spark.streaming.JavaForeachPartitionFunc;
+
+import com.alibaba.rocketmq.client.producer.SendResult;
+import com.alibaba.rocketmq.common.message.Message;
+import com.cmall.mq.rocket.producer.DefaultProducer;
 
 /**
  * 基于滑动窗口的热点搜索词实时统计
@@ -126,6 +127,9 @@ public class SparkSqlRocketMqWindowDemo {
 		        //把DF变成RDD
 		        RDD<Row> resultRowRDD = reseltDataFram.rdd();
 		        
+		       // resultRowRDD.saveAsTextFile("D:\\data\\output.txt");
+		        
+		        
                 resultRowRDD.foreachPartition(new JavaForeachPartitionFunc() {
 					@Override
 					public void call(scala.collection.Iterator<Row> it) {
@@ -138,12 +142,18 @@ public class SparkSqlRocketMqWindowDemo {
 					        }
 						 
 						 try {
-							 File out = new File("/spark/examples/jars/output");
-							 if(!out.exists()){
-								 out.createNewFile();
-							 }
-							FileUtils.writeLines(out, list);
-						} catch (IOException e) {
+							 //File out = new File("D:\\data\\output.txt");
+							/* File out = new File("/spark/logs/output.txt");
+							 FileUtils.writeLines(out, list,true);*/
+							 
+							 Message msg = new Message("TopicTest2",// topic
+					                    "TagA",// tag
+					                    "key113",// key
+					                    list.toString().getBytes());// body
+							 DefaultProducer mqProducer= context.getBean(DefaultProducer.class);
+							 SendResult sendResult = mqProducer.getDefaultMQProducer().send(msg);
+							 System.out.println(sendResult);       
+						} catch (Exception e) {
 							e.printStackTrace();
 						}
 					}

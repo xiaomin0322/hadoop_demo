@@ -32,6 +32,11 @@
 		<property name="rocketMqMessageListener" ref="sparkRocketMqListener" />
 	</bean>
 	
-
+     <!-- 生产者 -->
+	<bean id="defaultProducer" class="com.cmall.mq.rocket.producer.DefaultProducer"
+		init-method="init" destroy-method="destroy" scope="singleton">
+		<property name="producerGroup" value="${mq.rocket.producerGroup}"></property>
+		<property name="namesrvAddr" value="${mq.rocket.namesrvAddr}"></property>
+	</bean>
 	
 </beans>
