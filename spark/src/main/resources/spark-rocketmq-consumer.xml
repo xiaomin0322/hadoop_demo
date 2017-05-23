@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+       		http://www.springframework.org/schema/beans/spring-beans.xsd 
+       		http://www.springframework.org/schema/context 
+       		http://www.springframework.org/schema/context/spring-context.xsd
+       		http://www.springframework.org/schema/aop 
+       		http://www.springframework.org/schema/aop/spring-aop.xsd
+       		http://www.springframework.org/schema/mvc
+       		http://www.springframework.org/schema/mvc/spring-mvc.xsd"
+	default-autowire="byName">
+
+    <context:annotation-config />
+	<aop:aspectj-autoproxy proxy-target-class="true" />
+	<!-- <context:component-scan base-package="com.cmall.search" /> -->
+
+    <context:property-placeholder location="classpath*:rocketmq.properties"
+		ignore-unresolvable="true" /> 
+		
+	<bean id="sparkRocketMqListener" class="zzm.spark.streaming.rocketmq.SparkRocketMqListenerReceiver"></bean>
+	
+	 <bean id="defaultConsumer" class="com.cmall.mq.rocket.consumer.DefaultConsumer"
+		init-method="init" destroy-method="destroy" scope="singleton">
+		<property name="namesrvAddr" value="${mq.rocket.namesrvAddr}"></property>
+        <property name="consumeThreadMax" value="1" />
+        <property name="consumeThreadMin" value="1" />
+		<property name="consumerGroup" value="${mq.rocket.consumerGroup}"></property>
+		<property name="topic" value="${mq.rocket.topic}" />
+		<property name="subExpression" value="${mq.rocket.subExpression}" />
+		<property name="rocketMqMessageListener" ref="sparkRocketMqListener" />
+	</bean>
+	
+
+	
+</beans>
