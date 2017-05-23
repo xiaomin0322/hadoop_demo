@@ -26,7 +26,7 @@ public class SparkRocketMqReceiver extends Receiver<String> {
     private void receive() {  
     	synchronized (list) {
     		    List<String> store = new ArrayList<String>(list);
-    		    System.out.println("store>>>>>>>>>>>>>>>>>>>>>>>"+store.size());
+    		    //System.out.println("store>>>>>>>>>>>>>>>>>>>>>>>"+store.size());
 				store(store.iterator());
 				list.clear();
 				// Restart in an attempt to connect again when server is active again  
