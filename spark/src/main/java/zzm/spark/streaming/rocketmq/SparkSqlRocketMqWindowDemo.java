@@ -48,7 +48,7 @@ public class SparkSqlRocketMqWindowDemo {
 	public static void main(String[] args) throws Exception {
 		
 		
-		SparkConf conf = new SparkConf().setAppName("SparkSqlRocketMqWindowDemo")/*.setMaster("local[2]")*/;
+		SparkConf conf = new SparkConf().setAppName("SparkSqlRocketMqWindowDemo").setMaster("local[2]");
 		JavaStreamingContext jsc = new JavaStreamingContext(conf,
 				Durations.seconds(5));
 
@@ -90,7 +90,7 @@ public class SparkSqlRocketMqWindowDemo {
 								// TODO Auto-generated method stub
 								return v1 + v2;
 							}
-						}, Durations.seconds(60 * 6), Durations.seconds(5));
+						}, Durations.seconds(60 * 60 * 1), Durations.seconds(5));
 
 		reduceByKeyAndWindowDStream.foreachRDD(new VoidFunction<JavaPairRDD<String,Integer>>() {
 			@Override

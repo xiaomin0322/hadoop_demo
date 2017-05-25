@@ -17,6 +17,12 @@ import org.apache.spark.streaming.api.java.JavaStreamingContext;
 
 import scala.Tuple2;
 
+
+/**
+ * /spark/bin/spark-submit --master local[2] --jars /spark/examples/jars/mysql-connector-java-5.1.42-bin.jar  --class zzm.spark.streaming.UpdateStateByKeyDemo --executor-memory 512m --total-executor-cores 2 --driver-memory 512M  /spark/examples/jars/UpdateStateByKeyDemo.jar 
+ * @author ThinkPad
+ *
+ */
 public class UpdateStateByKeyDemo {
 
 	public static void main(String[] args)throws Exception {
@@ -38,7 +44,7 @@ public class UpdateStateByKeyDemo {
 		 * Core是最佳的（一个段子分配为奇数个Core表现最佳，例如3个、5个、7个Core等）；
 		 */
 
-		SparkConf conf = new SparkConf().setMaster("local[2]").setAppName("UpdateStateByKeyDemo");
+		SparkConf conf = new SparkConf()/*.setMaster("local[2]")*/.setAppName("UpdateStateByKeyDemo");
 		
 		conf.set("spark.sql.broadcastTimeout", "50000");
 		conf.set("spark.network.timeout", "50000");
@@ -71,7 +77,10 @@ public class UpdateStateByKeyDemo {
 
 		// 生产环境下一般放在HDFS中
 
-		jsc.checkpoint("/usr/local/tmp/checkpoint");
+		//jsc.checkpoint("/usr/local/tmp/checkpoint");
+		//保存在hadoop usr 目录，spark master配置好
+		//本地跑连接不上hadoop node会有问题
+		jsc.checkpoint("/usr");
 
 		//jsc.checkpoint("D:\\usr\\local\\tmp\\checkpoint");
 		
