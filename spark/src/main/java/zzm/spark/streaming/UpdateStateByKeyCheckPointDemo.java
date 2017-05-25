@@ -18,12 +18,8 @@ import org.apache.spark.streaming.api.java.JavaStreamingContext;
 import scala.Tuple2;
 
 /**
- * /spark/bin/spark-submit --master local[2] --jars
- * /spark/examples/jars/mysql-connector-java-5.1.42-bin.jar --class
- * zzm.spark.streaming.UpdateStateByKeyDemo --executor-memory 512m
- * --total-executor-cores 2 --driver-memory 512M
- * /spark/examples/jars/UpdateStateByKeyDemo.jar
- * 
+ *  /spark/bin/spark-submit --master local[2] --jars /spark/examples/jars/mysql-connector-java-5.1.42-bin.jar  --class zzm.spark.streaming.UpdateStateByKeyCheckPointDemo --executor-memory 512m --total-executor-cores 2 --driver-memory 512M  /spark/examples/jars/UpdateStateByKeyCheckPointDemo.jar 
+ * 可恢复 
  * @author ThinkPad
  *
  */
