@@ -40,6 +40,12 @@
             <artifactId>spark-streaming_2.10</artifactId>
             <version>2.1.0</version>
         </dependency>
+        
+      <!--   <dependency>
+		    <groupId>org.apache.spark</groupId>
+		    <artifactId>spark-streaming_2.11</artifactId>
+		    <version>2.1.1</version>
+		</dependency> -->
      
       <!-- 这里如果用hadoop1.2.1 版本，必须引入，上面最好忽略h2 版本 -->  
      <!--<dependency>-->  
@@ -69,7 +75,7 @@
 	</dependencies>
 
 	<build>
-		<finalName>SparkSqlRocketMqWindowDemo</finalName>
+		<finalName>UpdateStateByKeyCheckPointDemo</finalName>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
