@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.derby.tools.sysinfo;
+import org.apache.hadoop.hive.ql.parse.HiveParser_IdentifiersParser.sysFuncNames_return;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
@@ -32,7 +34,89 @@ public class TransformationOperation {
 		// sortByKeyTest();
 		// joinTest();
 		//aggregateByKeyTest();
-		unionTest();
+		//unionTest();
+		//cacheTest();
+		
+		groupByKeyCacheTest();
+	}
+	
+	/**
+	 * groupByKey算子 案例：按照班级对成绩进行分组
+	 */
+	private static void groupByKeyCacheTest() {
+		SparkConf conf = new SparkConf().setAppName("groupByKey").setMaster(
+				"local");
+		JavaSparkContext sc = new JavaSparkContext(conf);
+
+		List<Tuple2<String, Integer>> scores = Arrays.asList(
+				new Tuple2<String, Integer>("class1", 80),
+				new Tuple2<String, Integer>("class2", 75),
+				new Tuple2<String, Integer>("class1", 90),
+				new Tuple2<String, Integer>("class2", 65));
+
+		// 创建JavaPairRDD
+		JavaPairRDD<String, Integer> scoresRDD = sc.parallelizePairs(scores);
+
+		JavaPairRDD<String, Iterable<Integer>> groupScores = scoresRDD
+				.groupByKey();
+		
+		
+
+		groupScores
+				.foreach(new VoidFunction<Tuple2<String, Iterable<Integer>>>() {
+
+					@Override
+					public void call(Tuple2<String, Iterable<Integer>> arg0)
+							throws Exception {
+						// TODO Auto-generated method stub
+						System.out.println("class:" + arg0._1);
+						Iterator<Integer> it = arg0._2.iterator();
+						while (it.hasNext()) {
+							System.out.println(it.next());
+						}
+						System.out
+								.println("====================================");
+					}
+				});
+		
+		groupScores.count();
+
+		sc.close();
+	}
+
+	
+	/**
+	 *cacheTest算子案例： 将集合中的元素都乘以2
+	 */
+	private static void cacheTest() {
+		SparkConf conf = new SparkConf().setAppName("map").setMaster("local");
+		JavaSparkContext sc = new JavaSparkContext(conf);
+
+		List<String> numbers = new ArrayList<String>();
+
+		for(int i=0;i<10000;i++){
+			numbers.add(""+i);
+		}
+		
+		JavaRDD<String> numberRDD = sc.parallelize(numbers);
+
+		/* long numAs = numberRDD.filter(new Function<String, Boolean>() {
+		      public Boolean call(String s) { return s.contains("3"); }
+		    }).count();
+
+		    long numBs = numberRDD.filter(new Function<String, Boolean>() {
+		      public Boolean call(String s) { return s.contains("11"); }
+		    }).count();
+
+		    System.out.println("Lines with a: " + numAs + ", lines with b: " + numBs);*/
+		
+		
+		
+		
+		
+		//String str= numberRDD.toDebugString();
+        //System.out.println(str);
+		sc.stop();
 	}
 	
 	
