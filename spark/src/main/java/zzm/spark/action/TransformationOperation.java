@@ -35,9 +35,9 @@ public class TransformationOperation {
 		// joinTest();
 		//aggregateByKeyTest();
 		//unionTest();
-		//cacheTest();
+		cacheTest();
 		
-		groupByKeyCacheTest();
+		//groupByKeyCacheTest();
 	}
 	
 	/**
@@ -100,7 +100,7 @@ public class TransformationOperation {
 		
 		JavaRDD<String> numberRDD = sc.parallelize(numbers);
 
-		/* long numAs = numberRDD.filter(new Function<String, Boolean>() {
+		 long numAs = numberRDD.filter(new Function<String, Boolean>() {
 		      public Boolean call(String s) { return s.contains("3"); }
 		    }).count();
 
@@ -108,7 +108,7 @@ public class TransformationOperation {
 		      public Boolean call(String s) { return s.contains("11"); }
 		    }).count();
 
-		    System.out.println("Lines with a: " + numAs + ", lines with b: " + numBs);*/
+		    System.out.println("Lines with a: " + numAs + ", lines with b: " + numBs);
 		
 		
 		
