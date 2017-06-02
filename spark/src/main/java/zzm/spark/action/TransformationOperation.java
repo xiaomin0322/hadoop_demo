@@ -89,7 +89,7 @@ public class TransformationOperation {
 	 *cacheTest算子案例： 将集合中的元素都乘以2
 	 */
 	private static void cacheTest() {
-		SparkConf conf = new SparkConf().setAppName("map").setMaster("local");
+		SparkConf conf = new SparkConf().setAppName("map")/*.setMaster("local")*/;
 		JavaSparkContext sc = new JavaSparkContext(conf);
 
 		List<String> numbers = new ArrayList<String>();
@@ -98,7 +98,7 @@ public class TransformationOperation {
 			numbers.add(""+i);
 		}
 		
-		JavaRDD<String> numberRDD = sc.parallelize(numbers);
+		JavaRDD<String> numberRDD = sc.parallelize(numbers).cache();
 
 		 long numAs = numberRDD.filter(new Function<String, Boolean>() {
 		      public Boolean call(String s) { return s.contains("3"); }
