@@ -18,10 +18,7 @@ public class SparkRocketMqListener implements RocketMqMessageListener {
             Message msg = messages.get(i);
             try{
             	  String msgStr = new String(msg.getBody(),"utf-8");
-            	  synchronized (SparkRocketMqReceiver.list) {
-            		  //System.out.println("msgStr : "+msgStr);
-            		  SparkRocketMqReceiver.list.add(msgStr);
-            	  }
+            	  SparkRocketMqReceiver.addQueue(msgStr);
 			}catch(Exception e){
 				e.printStackTrace();
 			}
