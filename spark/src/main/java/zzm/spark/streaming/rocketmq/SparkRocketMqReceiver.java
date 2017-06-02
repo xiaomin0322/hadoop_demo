@@ -59,6 +59,7 @@ public class SparkRocketMqReceiver extends Receiver<String> {
     	        	}
     	        	storeSize+=1;
     	        }
+    		 System.out.println("获取数据>>>>>>>>>>>>>>>>>>>>>"+storeSize);
     	}catch(Exception e){
     		e.printStackTrace();
     	}finally{
