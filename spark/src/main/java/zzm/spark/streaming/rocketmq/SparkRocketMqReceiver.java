@@ -1,7 +1,6 @@
 package zzm.spark.streaming.rocketmq;
 
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.apache.spark.storage.StorageLevel;
 import org.apache.spark.streaming.receiver.Receiver;
@@ -18,9 +17,10 @@ public class SparkRocketMqReceiver extends Receiver<String> {
 
     public  static  final  int batcheSize = 100000;
     public  static  final  int queueSize  = 100000;
-    public  static  final  BlockingQueue<String> QUEUE = new ArrayBlockingQueue<String>(queueSize);
+    //public  static  final  BlockingQueue<String> QUEUE = new ArrayBlockingQueue<String>(queueSize);
+    //public  static  final  BlockingQueue<String> QUEUE = new LinkedBlockingDeque<String>();
     
-    //public  static  final  ConcurrentLinkedQueue<String> list = new ConcurrentLinkedQueue<String>();
+    public  static  final  ConcurrentLinkedQueue<String> QUEUE = new ConcurrentLinkedQueue<String>();
    
 	/**
 	 * 
@@ -28,12 +28,14 @@ public class SparkRocketMqReceiver extends Receiver<String> {
 	private static final long serialVersionUID = 1L;
 
 	public static void addQueue(String str){
-		try {
+		/*try {
 			//阻塞添加元素
 			QUEUE.put(str);
 		}catch (InterruptedException e) {
 			e.printStackTrace();
-		}
+		}*/
+		//非阻塞
+		QUEUE.offer(str);
 	}
 	
     

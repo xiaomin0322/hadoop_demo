@@ -3,12 +3,12 @@ package zzm.spark.streaming.rocketmq;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.FlatMapFunction;
-import org.apache.spark.api.java.function.Function;
 import org.apache.spark.api.java.function.Function2;
 import org.apache.spark.api.java.function.PairFunction;
 import org.apache.spark.api.java.function.VoidFunction;
@@ -48,7 +48,7 @@ public class SparkSqlRocketMqWindowDemo {
 	public static void main(String[] args) throws Exception {
 		
 		
-		SparkConf conf = new SparkConf().setAppName("SparkSqlRocketMqWindowDemo").setMaster("local[2]");
+		SparkConf conf = new SparkConf().setAppName("SparkSqlRocketMqWindowDemo")/*.setMaster("local[2]")*/;
 		JavaStreamingContext jsc = new JavaStreamingContext(conf,
 				Durations.seconds(5));
 
@@ -90,12 +90,14 @@ public class SparkSqlRocketMqWindowDemo {
 								// TODO Auto-generated method stub
 								return v1 + v2;
 							}
-						}, Durations.seconds(60 * 60 * 1), Durations.seconds(5));
+						}, Durations.seconds(60 * 60 * 10), Durations.seconds(5));
 
 		reduceByKeyAndWindowDStream.foreachRDD(new VoidFunction<JavaPairRDD<String,Integer>>() {
 			@Override
 			public void call(JavaPairRDD<String, Integer> rdd) throws Exception {
-				JavaRDD<Row> mapToPairRDD = rdd
+				
+				
+				/*JavaRDD<Row> mapToPairRDD = rdd
 						.map(new Function<Tuple2<String,Integer>, Row>() {
 							@Override
 							public Row call(Tuple2<String, Integer> v1)
@@ -104,7 +106,25 @@ public class SparkSqlRocketMqWindowDemo {
 								return row;
 							}
 							
+						});*/
+				
+				JavaRDD<Row> mapToPairRDD = rdd
+						.mapPartitions(new FlatMapFunction<Iterator<Tuple2<String,Integer>>, Row>() {
+							@Override
+							public Iterator<Row> call(
+									Iterator<Tuple2<String, Integer>> ts)
+									throws Exception {
+								List<Row> rows = new ArrayList<Row>();
+								while(ts.hasNext()){
+									Tuple2<String, Integer> v1 = ts.next();
+									Row row = RowFactory.create(v1._1,v1._2);
+									rows.add(row);
+								}
+								return rows.iterator();
+							}
+							
 						});
+				
 				
 				//构建DataFrame用下面代码
 				StructType structType =  DataTypes.createStructType(Arrays.asList(
