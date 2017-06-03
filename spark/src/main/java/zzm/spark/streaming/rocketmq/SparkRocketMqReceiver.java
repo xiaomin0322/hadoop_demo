@@ -1,5 +1,7 @@
 package zzm.spark.streaming.rocketmq;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.apache.spark.storage.StorageLevel;
@@ -50,6 +52,7 @@ public class SparkRocketMqReceiver extends Receiver<String> {
 		}*/
     	
     	int storeSize=0;
+    	List<String> storeList = new ArrayList<String>();
     	try{
     		 while (!QUEUE.isEmpty() && storeSize < batcheSize) {
     	        	//非阻塞获取队列元素,取不到时返回null
@@ -57,7 +60,8 @@ public class SparkRocketMqReceiver extends Receiver<String> {
     	        	if(str==null){
     	        		break;
     	        	}else{
-    	        		store(str);
+    	        		//store(str);
+    	        		storeList.add(str);
     	        	}
     	        	storeSize+=1;
     	        }
@@ -65,6 +69,7 @@ public class SparkRocketMqReceiver extends Receiver<String> {
     	}catch(Exception e){
     		e.printStackTrace();
     	}finally{
+    		 store(storeList.iterator());
     		 restart("Trying to connect again");  
     	}
     }
