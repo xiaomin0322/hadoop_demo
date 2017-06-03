@@ -1,8 +1,10 @@
 package zzm.spark.streaming.rocketmq;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
@@ -149,10 +151,36 @@ public class SparkRocketMqWindowDemo {
     							e.printStackTrace();
     						}
                         }
+                        
+                     Map<String,Tuple2<String, Integer>> map = new HashMap<String, Tuple2<String,Integer>>();
+						
+						// 遍历输出结果
+						for (Tuple2<String, Integer> info : result) {
+							System.out.println(info._1 + "  " + info._2);
+							map.put(info._1, info);
+						}
+						
+						/*JavaPairRDD<String, Integer> filterRDD = wordcountRDD.mapToPair(new PairFunction<Tuple2<String, Integer>, String,Integer>() {
+							private static final long serialVersionUID = 1L;
+							public Tuple2<String,Integer> call(
+									Tuple2<String, Integer> tuple)
+									throws Exception {
+								return map.get(tuple._1);
+							}
+						});*/
+						
+						JavaPairRDD<String, Integer> filterRDD = wordcountRDD.filter(new Function<Tuple2<String,Integer>, Boolean>() {
+							@Override
+							public Boolean call(Tuple2<String, Integer> v1) throws Exception {
+								return map.containsKey(v1._1);
+							}
+						});
 
-						return wordcountRDD;
+						return filterRDD;
 					}
 				});
+		
+		resultDStream.print();
 
 		jsc.start();
 		jsc.awaitTermination();
