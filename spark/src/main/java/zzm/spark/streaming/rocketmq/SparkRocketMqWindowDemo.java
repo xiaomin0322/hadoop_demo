@@ -180,7 +180,9 @@ public class SparkRocketMqWindowDemo {
 					}
 				});
 		
-		resultDStream.print();
+		
+		
+		resultDStream.count();
 
 		jsc.start();
 		jsc.awaitTermination();
