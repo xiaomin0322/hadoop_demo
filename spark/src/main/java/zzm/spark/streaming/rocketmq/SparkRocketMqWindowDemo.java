@@ -12,6 +12,7 @@ import org.apache.spark.api.java.function.FlatMapFunction;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.api.java.function.Function2;
 import org.apache.spark.api.java.function.PairFunction;
+import org.apache.spark.api.java.function.VoidFunction;
 import org.apache.spark.streaming.Durations;
 import org.apache.spark.streaming.api.java.JavaDStream;
 import org.apache.spark.streaming.api.java.JavaPairDStream;
@@ -180,9 +181,14 @@ public class SparkRocketMqWindowDemo {
 					}
 				});
 		
+		//resultDStream.print();
 		
-		
-		resultDStream.count();
+		resultDStream.foreachRDD(new VoidFunction<JavaPairRDD<String,Integer>>() {
+			@Override
+			public void call(JavaPairRDD<String, Integer> t) throws Exception {
+				// TODO Auto-generated method stub
+			}
+		});
 
 		jsc.start();
 		jsc.awaitTermination();
