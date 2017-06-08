@@ -37,11 +37,12 @@ public class SparkRocketMqWindowDemo {
 	
 	static  ApplicationContext    context= new ClassPathXmlApplicationContext(new String[]{"classpath:spark-rocketmq-consumer.xml" });
 	
+	//static int size = 0;
 	
 	public static void main(String[] args) throws Exception {
 		
 		
-		SparkConf conf = new SparkConf().setAppName("SparkSqlRocketMqWindowDemo")/*.setMaster("local[2]")*/;
+		SparkConf conf = new SparkConf().setAppName("SparkSqlRocketMqWindowDemo").setMaster("local[2]");
 		JavaStreamingContext jsc = new JavaStreamingContext(conf,
 				Durations.seconds(5));
 
@@ -55,6 +56,7 @@ public class SparkRocketMqWindowDemo {
 		JavaDStream<String> mapDStream = socketTextStream
 				.flatMap(new FlatMapFunction<String, String>() {
 					public Iterator<String> call(String x) {
+						//size+=1;
 						return Arrays.asList(x.split(" ")).iterator();
 					}
 				});
@@ -111,6 +113,8 @@ public class SparkRocketMqWindowDemo {
 												tuple._2, tuple._1);
 									}
 								});
+						
+						long size = mapToPairRDD.count();
 
 						// 根据key值进行降序排列
 						JavaPairRDD<Integer, String> sortByKeyRDD = mapToPairRDD
@@ -132,6 +136,7 @@ public class SparkRocketMqWindowDemo {
 								});
 						
 
+						
 						// 获取降序排列之后的前3名
 						List<Tuple2<String, Integer>> result = wordcountRDD
 								.take(3);
@@ -144,7 +149,7 @@ public class SparkRocketMqWindowDemo {
     							 Message msg = new Message("TopicTest2",// topic
     					                    "TagA",// tag
     					                    "key113",// key
-    					                    (rs._1 + " "+ rs._2).getBytes());// body
+    					                    (rs._1 + " "+ rs._2+"   ___size="+size).getBytes());// body
     							 DefaultProducer mqProducer= context.getBean(DefaultProducer.class);
     							 SendResult sendResult = mqProducer.getDefaultMQProducer().send(msg);
     							 System.out.println(sendResult);       

@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.derby.tools.sysinfo;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
@@ -125,7 +126,6 @@ public class SparkSqlRocketMqWindowDemo {
 							
 						});
 				
-				
 				//构建DataFrame用下面代码
 				StructType structType =  DataTypes.createStructType(Arrays.asList(
 						DataTypes.createStructField("item", DataTypes.StringType, true),
@@ -138,9 +138,15 @@ public class SparkSqlRocketMqWindowDemo {
 		        Dataset<Row> df =  sqlContext.createDataFrame(mapToPairRDD, structType);
 		      //注册一个表，用sql去操作
 		        sqlContext.registerDataFrameAsTable(df,"categoryItemTable");
+		        
+		        //一共获取多少条数据
+		        sqlContext.sql("SELECT sum(count) from categoryItemTable").show();
+		        
 				
 		        
 		        Dataset<Row>  reseltDataFram = sqlContext.sql("SELECT * from categoryItemTable order by count desc limit 10");
+		        
+		       
 		        
 		        //reseltDataFram.show();
 		        
@@ -169,7 +175,7 @@ public class SparkSqlRocketMqWindowDemo {
 							 Message msg = new Message("TopicTest2",// topic
 					                    "TagA",// tag
 					                    "key113",// key
-					                    list.toString().getBytes());// body
+					                    (list.toString()).getBytes());// body
 							 DefaultProducer mqProducer= context.getBean(DefaultProducer.class);
 							 SendResult sendResult = mqProducer.getDefaultMQProducer().send(msg);
 							 System.out.println(sendResult);       
