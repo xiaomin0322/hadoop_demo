@@ -38,11 +38,11 @@ public class Consumer implements Serializable{
 		new Consumer();
 	}
 	
-	
+	//当spark straming 消费过慢，QUEUE 可能会内存爆掉，建议控制QUEUE大小，控制内存
 	public   ConcurrentLinkedQueue<String> QUEUE = new ConcurrentLinkedQueue<String>();
 	 DefaultMQPushConsumer consumer = null;
     public  void init() throws MQClientException {
-		 consumer = new DefaultMQPushConsumer("MyConsumerGroup12");
+		 consumer = new DefaultMQPushConsumer("MyConsumerGroup");
         consumer.setNamesrvAddr("rocket1.cmall.com:9876");
         /**
          * 设置Consumer第一次启动是从队列头部开始消费还是队列尾部开始消费<br>
@@ -50,7 +50,7 @@ public class Consumer implements Serializable{
          */
         consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_FIRST_OFFSET);
 
-        consumer.subscribe("TopicTest12", "*");
+        consumer.subscribe("TopicTest1", "*");
         
         consumer.setConsumeThreadMax(4);
         consumer.setConsumeThreadMin(4);
