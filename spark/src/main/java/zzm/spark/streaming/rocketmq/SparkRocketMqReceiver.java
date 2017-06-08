@@ -21,7 +21,7 @@ public class SparkRocketMqReceiver extends Receiver<String> {
     public  static  final  int queueSize  = 100000;
     //public  static  final  BlockingQueue<String> QUEUE = new ArrayBlockingQueue<String>(queueSize);
     //public  static  final  BlockingQueue<String> QUEUE = new LinkedBlockingDeque<String>();
-    
+    //成员变量又问题
     public  static  final  ConcurrentLinkedQueue<String> QUEUE = new ConcurrentLinkedQueue<String>();
    
 	/**

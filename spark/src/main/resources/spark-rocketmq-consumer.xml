@@ -19,7 +19,7 @@
     <context:property-placeholder location="classpath*:rocketmq.properties"
 		ignore-unresolvable="true" /> 
 		
-	<bean id="sparkRocketMqListener" class="zzm.spark.streaming.rocketmq.SparkRocketMqListener"></bean>
+<!-- 	<bean id="sparkRocketMqListener" class="zzm.spark.streaming.rocketmq.SparkRocketMqListener"></bean>
 	
 	 <bean id="defaultConsumer" class="com.cmall.mq.rocket.consumer.DefaultConsumer"
 		init-method="init" destroy-method="destroy" scope="singleton">
@@ -31,7 +31,7 @@
 		<property name="subExpression" value="${mq.rocket.subExpression}" />
 		<property name="rocketMqMessageListener" ref="sparkRocketMqListener" />
 	</bean>
-	
+	 -->
      <!-- 生产者 -->
 	<bean id="defaultProducer" class="com.cmall.mq.rocket.producer.DefaultProducer"
 		init-method="init" destroy-method="destroy" scope="singleton">

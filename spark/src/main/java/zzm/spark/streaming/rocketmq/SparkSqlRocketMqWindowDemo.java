@@ -51,10 +51,12 @@ public class SparkSqlRocketMqWindowDemo {
 		SparkConf conf = new SparkConf().setAppName("SparkSqlRocketMqWindowDemo")/*.setMaster("local[2]")*/;
 		JavaStreamingContext jsc = new JavaStreamingContext(conf,
 				Durations.seconds(5));
+		
+		//jsc.union(first, rest)
 
 		// 从nc服务中读取输入的数据
 		JavaReceiverInputDStream<String> socketTextStream = jsc
-				.receiverStream(new SparkRocketMqReceiver());
+				.receiverStream(new SparkRocketMqReceiver2());
 
 		/**
 		 * 搜索的日志格式：name words，比如：张三 hello 我们通过map算子将搜索词取出
