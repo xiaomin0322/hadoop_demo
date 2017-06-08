@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.derby.tools.sysinfo;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
@@ -140,12 +139,24 @@ public class SparkSqlRocketMqWindowDemo {
 		        sqlContext.registerDataFrameAsTable(df,"categoryItemTable");
 		        
 		        //一共获取多少条数据
-		        sqlContext.sql("SELECT sum(count) from categoryItemTable").show();
+			       Dataset<Row>  reseltDataFramConut =sqlContext.sql("SELECT sum(count) cnt from categoryItemTable");
+			       RDD<Row> resultRowRDDCount = reseltDataFramConut.rdd();
+			       Long count = null;
+			       Row row = resultRowRDDCount.first();
+			       if(row!=null && !row.anyNull()){
+			    	    count = row.getAs("cnt");
+			       }
+			     Message msg = new Message("TopicTest2",// topic
+		                    "TagA",// tag
+		                    "key113",// key
+		                    ("count================="+count).getBytes());// body
+				 DefaultProducer mqProducer= context.getBean(DefaultProducer.class);
+				 SendResult sendResult = mqProducer.getDefaultMQProducer().send(msg);
+				 
+			     System.out.println("count >>>>>>>>>>>>>>>>>>>>>>>>"+count);
 		        
-				
 		        
-		        Dataset<Row>  reseltDataFram = sqlContext.sql("SELECT * from categoryItemTable order by count desc limit 10");
-		        
+		       Dataset<Row>  reseltDataFram = sqlContext.sql("SELECT * from categoryItemTable order by count desc limit 10");
 		       
 		        
 		        //reseltDataFram.show();
@@ -167,6 +178,8 @@ public class SparkSqlRocketMqWindowDemo {
 					         //System.out.println("toString === "+t);
 					        }
 						 
+						 
+						 
 						 try {
 							 //File out = new File("D:\\data\\output.txt");
 							/* File out = new File("/spark/logs/output.txt");
@@ -175,7 +188,7 @@ public class SparkSqlRocketMqWindowDemo {
 							 Message msg = new Message("TopicTest2",// topic
 					                    "TagA",// tag
 					                    "key113",// key
-					                    (list.toString()).getBytes());// body
+					                    (list.toString()+" count=").getBytes());// body
 							 DefaultProducer mqProducer= context.getBean(DefaultProducer.class);
 							 SendResult sendResult = mqProducer.getDefaultMQProducer().send(msg);
 							 System.out.println(sendResult);       
