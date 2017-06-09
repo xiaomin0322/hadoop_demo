@@ -1,9 +1,8 @@
 package zzm.spark.streaming.rocketmq;
 import java.io.Serializable;
 import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
-import org.apache.derby.tools.sysinfo;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 import com.alibaba.rocketmq.client.consumer.DefaultMQPushConsumer;
 import com.alibaba.rocketmq.client.consumer.listener.ConsumeOrderlyContext;
@@ -24,7 +23,8 @@ public class Consumer implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
+  
+    
 	public Consumer(){
 		try {
 			System.out.println("Consumer init ?>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
@@ -37,9 +37,10 @@ public class Consumer implements Serializable{
 	public static void main(String[] args) {
 		new Consumer();
 	}
-	
+	  public  static  final  int queueSize  = 100000;
 	//当spark straming 消费过慢，QUEUE 可能会内存爆掉，建议控制QUEUE大小，控制内存
-	public   ConcurrentLinkedQueue<String> QUEUE = new ConcurrentLinkedQueue<String>();
+	//public   ConcurrentLinkedQueue<String> QUEUE = new ConcurrentLinkedQueue<String>();
+	public  static  final  BlockingQueue<String> QUEUE = new ArrayBlockingQueue<String>(queueSize);
 	 DefaultMQPushConsumer consumer = null;
     public  void init() throws MQClientException {
 		 consumer = new DefaultMQPushConsumer("MyConsumerGroup");
@@ -63,7 +64,14 @@ public class Consumer implements Serializable{
                // System.out.println(Thread.currentThread().getName() + " Receive New Messages: QUEUE.size===" +QUEUE.size());
                 for (MessageExt msg: msgs) {
                     //System.out.println(msg + ", content:" + new String(msg.getBody()));
-                	QUEUE.offer(new String(msg.getBody()));
+                	//QUEUE.offer(new String(msg.getBody()));
+                	//	
+                	try {
+                		//队列满，阻塞
+						QUEUE.put(new String(msg.getBody()));
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
                 }
                 return ConsumeOrderlyStatus.SUCCESS;
             }

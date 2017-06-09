@@ -23,7 +23,6 @@ public class SparkRocketMqReceiver2 extends Receiver<String> {
 	}
 
     public  static  final  int batcheSize = 100000;
-    public  static  final  int queueSize  = 100000;
    
 	/**
 	 * 
