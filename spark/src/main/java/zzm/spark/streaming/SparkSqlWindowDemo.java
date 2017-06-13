@@ -25,8 +25,6 @@ import org.apache.spark.streaming.api.java.JavaReceiverInputDStream;
 import org.apache.spark.streaming.api.java.JavaStreamingContext;
 
 import scala.Tuple2;
-import scala.runtime.AbstractFunction1;
-import scala.runtime.BoxedUnit;
 
 /**
  * 基于滑动窗口的热点搜索词实时统计
@@ -107,7 +105,16 @@ public class SparkSqlWindowDemo {
 		        Dataset<Row> df =  sqlContext.createDataFrame(mapToPairRDD, structType);
 		      //注册一个表，用sql去操作
 		        sqlContext.registerDataFrameAsTable(df,"categoryItemTable");
-				
+		        
+		        //一共获取多少条数据
+			       Dataset<Row>  reseltDataFramConut =sqlContext.sql("SELECT sum(count) cnt from categoryItemTable");
+			       RDD<Row> resultRowRDDCount = reseltDataFramConut.rdd();
+			       Long count = null;
+			       Row row = resultRowRDDCount.first();
+			       if(row!=null && !row.anyNull()){
+			    	    count = row.getAs("cnt");
+			       }
+			     System.out.println("count >>>>>>>>>>>>>>>>>>>>>>>>"+count);
 		        
 		        Dataset<Row>  reseltDataFram = sqlContext.sql("SELECT * from categoryItemTable order by count desc limit 3");
 		        
