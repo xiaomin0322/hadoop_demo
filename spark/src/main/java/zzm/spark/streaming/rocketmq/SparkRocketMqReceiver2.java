@@ -33,14 +33,12 @@ public class SparkRocketMqReceiver2 extends Receiver<String> {
 	 private void receive(Consumer consumer) {  
 	    	int storeSize=0;
 	    	List<String> storeList = new ArrayList<String>();
-	    	 System.out.println("队列大小>>>>>>>>>>>>>>>>>>>>>"+consumer.QUEUE.size());
+	    	//System.out.println("队列大小>>>>>>>>>>>>>>>>>>>>>"+consumer.QUEUE.size());
 	    	try{
 	    		 while (consumer !=null && !consumer.QUEUE.isEmpty() && storeSize < batcheSize) {
 	    	        	//非阻塞获取队列元素,取不到时返回null
 	    	        	String str = consumer.QUEUE.poll();
-	    	        	if(str==null){
-	    	        		break;
-	    	        	}else{
+	    	        	if(str!=null){
 	    	        		//store(str);
 	    	        		storeList.add(str);
 	    	        	}

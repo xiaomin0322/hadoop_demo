@@ -92,7 +92,7 @@ public class SparkSqlRocketMqWindowDemo {
 								// TODO Auto-generated method stub
 								return v1 + v2;
 							}
-						}, Durations.seconds(60 * 60 * 10), Durations.seconds(5));
+						}, Durations.seconds(60 * 60 * 10), Durations.seconds(20));
 
 		reduceByKeyAndWindowDStream.foreachRDD(new VoidFunction<JavaPairRDD<String,Integer>>() {
 			@Override
